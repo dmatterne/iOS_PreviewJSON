@@ -43,7 +43,23 @@ class UsersTableViewController: UITableViewController {
             do{
             let usersJson = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! [Dictionary<String, Any>]
             // wanneer er zich een error voordoet, krijg je misschien geen data binnen, daarom !
-            print(usersJson)
+            
+                for item in usersJson{
+                    let id = item["id"] as! Int
+                    let name = item["name"] as! String
+                    let email = item["email"] as! String
+                    
+                    let user = User()
+                    user.id = id
+                    user.name = name
+                    user.email = email
+                    
+                    self.users.append(user)
+                    
+                    
+                }
+                
+                print(usersJson)
             
             }catch let error {
                 print(error)
@@ -56,24 +72,26 @@ class UsersTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+      
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        
+        return users.count
     }
 
-    /*
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath)
 
-        // Configure the cell...
+        let user = users[indexPath.row]
+        cell.textLabel?.text = user.name
+        cell.detailTextLabel?.text = user.email
 
         return cell
     }
-    */
+    
 
     /*
     // Override to support conditional editing of the table view.
