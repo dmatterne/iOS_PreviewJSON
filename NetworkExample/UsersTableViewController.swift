@@ -41,6 +41,7 @@ class UsersTableViewController: UITableViewController {
     
     
     func getUsers(){
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         let usersUrl = "\(apiUrl)/users"
         let url = URL(string: usersUrl)
         
@@ -67,7 +68,9 @@ class UsersTableViewController: UITableViewController {
                 
                 DispatchQueue.main.async {
                     self.refresh.endRefreshing()
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
                     self.tableView.reloadData()
+                
                 }
                 
             
