@@ -1,103 +1,116 @@
 //
-//  UsersTableViewController.swift
+//  TodosTableViewController.swift
 //  NetworkExample
 //
-//  Created by Tywin Lannister on 04/10/16.
+//  Created by Stannis Baratheon on 04/10/16.
 //  Copyright © 2016 Training. All rights reserved.
 //
 
 import UIKit
 
-class UsersTableViewController: UITableViewController {
+class TodosTableViewController: UITableViewController {
     
-    var users = [User]() // lege array
-    private let apiUrl:String = "https://jsonplaceholder.typicode.com"
-    private var session:URLSession!
-    @IBOutlet weak var refresh: UIRefreshControl!
+    var apiUrl:String!
+    var session:URLSession!
+    var user:User!
+    
+    var todos = [Todo] ()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let config = URLSessionConfiguration.default
-        session = URLSession(configuration: config)
-        
-        
-        
-        refresh.addTarget(self, action: #selector(getUsers), for: .valueChanged)
-        
-        getUsers()
+
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        getTodos()
+        
     }
     
-    
-    
-    func getUsers(){
-        let usersUrl = "\(apiUrl)/users"
-        let url = URL(string: usersUrl)
+    private func getTodos() {
+        let todosUrl = "\(apiUrl!)/todos?userid=\(user.id)"
         
-        let usersTask = session.dataTask(with: url!) { (data, response, error) in
+        print(todosUrl)
+        
+        let url = URL(string: todosUrl)
+        
+        let todosTask = session.dataTask(with: url!) { (data, response, error) in
             
             do{
-            let usersJson = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! [Dictionary<String, Any>]
-            // wanneer er zich een error voordoet, krijg je misschien geen data binnen, daarom !
-            
-                for item in usersJson{
-                    let id = item["id"] as! Int
-                    let name = item["name"] as! String
-                    let email = item["email"] as! String
+                let todosJson = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! [Dictionary<String, Any>]
+                // wanneer er zich een error voordoet, krijg je misschien geen data binnen, daarom !
+                
+                for item in todosJson{
+                    let title = item["title"] as! String
+                    print(title)
                     
-                    let user = User()
-                    user.id = id
-                    user.name = name
-                    user.email = email
+                    let completed = item["completed"] as! Bool
                     
-                    self.users.append(user)
+                    let todo = Todo()
+                    todo.title = title
+                    todo.completed = completed
+                    
+                    self.todos.append(todo)
                     
                     
                 }
                 
                 DispatchQueue.main.async {
-                    self.refresh.endRefreshing()
                     self.tableView.reloadData()
                 }
                 
-            
+                
             }catch let error {
                 print(error)
             }
         }
-        usersTask.resume()
+        todosTask.resume()
+
     }
-    
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-      
+        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return users.count
+        // #warning Incomplete implementation, return the number of rows
+        return todos.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "todoCell", for: indexPath)
 
-        let user = users[indexPath.row]
-        cell.textLabel?.text = user.name
-        cell.detailTextLabel?.text = user.email
+        let todo = todos[indexPath.row]
+        
+        cell.textLabel?.text = todo.title
+        if todo.completed {
+        
+            cell.accessoryType = .checkmark
+        } else {
+        
+        
+            cell.accessoryType = .none
+        }
+        
+        
+        
+        
+        // Configure the cell...
 
         return cell
     }
@@ -138,30 +151,14 @@ class UsersTableViewController: UITableViewController {
     }
     */
 
-    
+    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "userTodosSegue" {
-        
-            let controller = segue.destination as! TodosTableViewController
-            controller.apiUrl = apiUrl
-            controller.session = session
-            
-            let selectedCell = tableView.indexPathForSelectedRow
-            
-            let user = users[selectedCell!.row]
-            
-            
-            controller.user = user
-            
-        
-        }
-        
-        
-        
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
     }
-    
+    */
 
 }
